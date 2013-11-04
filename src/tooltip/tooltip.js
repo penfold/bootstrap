@@ -193,7 +193,10 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
 		// Calculate the tooltip's top and left coordinates to center it with
 		// this directive.
-		switch (scope.tt_placement) {
+		
+		scope.tt_placement = scope.tt_requested_placement;
+		
+		switch (scope.tt_requested_placement) {
 			case 'auto':
 				var ttLeft;
 				var ttTop;
@@ -201,24 +204,30 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 					// Top
 					ttLeft = position.left + position.width / 2 - ttWidth / 2;
 					ttTop = position.top - ttHeight;
+					scope.tt_placement = 'top';
 				} else if (fitsVerticallyCentered && (position.top + position.height + ttHeight <= pageYOffset + $document.height())) {
 					// Bottom
 					ttLeft = position.left + position.width / 2 - ttWidth / 2;
-					ttTop = position.top + position.height;                                   
+					ttTop = position.top + position.height;
+					scope.tt_placement = 'bottom';					
 				} else if ((position.left + position.width + ttWidth <= pageXOffset + $document.width()) &&
 					(position.left + position.width + ttWidth >= pageXOffset)) {
 					// Right side
 					ttLeft = position.left + position.width;
 					ttTop = position.top + position.height / 2 - ttHeight / 2;
+					scope.tt_placement = 'right';
 				} else if ((position.left - ttWidth >= pageXOffset) &&
 					(position.left + position.width + ttWidth >= pageXOffset)) {
 					// Left side
 					ttLeft = position.left - ttWidth;
 					ttTop = position.top + position.height / 2 - ttHeight / 2;
+					scope.tt_placement = 'left';
 				} else {
 					// Tooltip too big
 					ttLeft = pageXOffset;
 					ttTop = pageYOffset;
+					
+					scope.tt_placement = 'top';
 				}
 
 				ttPosition = {
@@ -299,7 +308,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
           });
 
           attrs.$observe( prefix+'Placement', function ( val ) {
-            scope.tt_placement = angular.isDefined( val ) ? val : options.placement;
+            scope.tt_requested_placement = angular.isDefined( val ) ? val : options.placement;
           });
 
           attrs.$observe( prefix+'Animation', function ( val ) {
